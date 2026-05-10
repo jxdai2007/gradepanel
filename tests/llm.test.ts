@@ -3,12 +3,16 @@ import { z } from 'zod'
 import { callLLM } from '@/lib/llm/caller'
 import { MODELS } from '@/lib/llm/models'
 
+const hasRealKey = Boolean(
+  process.env.OPENROUTER_API_KEY && !process.env.OPENROUTER_API_KEY.startsWith('dummy')
+)
+
 describe('callLLM', () => {
   beforeAll(() => {
     if (!process.env.OPENROUTER_API_KEY) throw new Error('OPENROUTER_API_KEY required for tests')
   })
 
-  it('returns a parsed object matching schema', async () => {
+  it.skipIf(!hasRealKey)('returns a parsed object matching schema', async () => {
     const schema = z.object({ greeting: z.string() })
     const result = await callLLM({
       model: MODELS.CLAUDE,
@@ -21,7 +25,7 @@ describe('callLLM', () => {
     expect(result.greeting).toBeTypeOf('string')
   }, 30_000)
 
-  it('throws SchemaValidationError on persistently malformed response', async () => {
+  it.skipIf(!hasRealKey)('throws SchemaValidationError on persistently malformed response', async () => {
     const schema = z.object({ impossible_field: z.literal('xyz123abc') })
     await expect(
       callLLM({
