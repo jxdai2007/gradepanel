@@ -6,7 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "eval": "tsx eval/calibrate.ts",
+    "ci": "npm run lint && npm test && npm run build"
   },
   "dependencies": {
     "better-sqlite3": "^12.9.0",
