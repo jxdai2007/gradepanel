@@ -77,7 +77,7 @@ describe('POST /api/regrade', () => {
     expect(res.status).toBe(404)
   })
 
-  it.skipIf(!process.env.OPENROUTER_API_KEY)(
+  it.skipIf(!process.env.OPENROUTER_API_KEY?.startsWith('sk-or-'))(
     'returns filtered response for valid deduction',
     async () => {
       const req = new Request('http://localhost/api/regrade', {

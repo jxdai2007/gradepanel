@@ -49,7 +49,7 @@ describe('POST /api/extract', () => {
     expect(res.status).toBe(400)
   })
 
-  it.skipIf(!process.env.OPENROUTER_API_KEY)(
+  it.skipIf(!process.env.OPENROUTER_API_KEY?.startsWith('sk-or-'))(
     'extracts and returns rubric+perSubmission+conceptsByItem for valid input',
     async () => {
       const body = {

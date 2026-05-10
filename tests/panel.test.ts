@@ -4,7 +4,7 @@ import { runPanel } from '@/lib/panel'
 import { aggregate } from '@/lib/panel/aggregate'
 import { z } from 'zod'
 
-const hasRealKey = !!process.env.OPENROUTER_API_KEY
+const hasRealKey = !!process.env.OPENROUTER_API_KEY?.startsWith('sk-or-')
 
 const SimpleSchema = z.object({ score: z.number(), reasoning: z.string() })
 

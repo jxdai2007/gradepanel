@@ -4,7 +4,7 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { resetDb, getDb } from '@/lib/graph/db'
 import { gradeSubmission } from '@/lib/grading/pipeline'
 
-const hasRealKey = !!process.env.OPENROUTER_API_KEY
+const hasRealKey = !!process.env.OPENROUTER_API_KEY?.startsWith('sk-or-')
 
 describe('gradeSubmission', () => {
   beforeEach(() => {

@@ -2,7 +2,7 @@
 import { describe, it, expect, beforeAll } from 'vitest'
 import { extractFromSubmission, extractConcepts, inferRubric } from '@/lib/extract/bootstrap'
 
-const hasRealKey = !!process.env.OPENROUTER_API_KEY
+const hasRealKey = !!process.env.OPENROUTER_API_KEY?.startsWith('sk-or-')
 
 const SAMPLE_GRADED = `Student: Jane Doe
 Q1: Find the derivative of f(x) = sin(2x²)

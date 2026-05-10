@@ -3,9 +3,7 @@ import { z } from 'zod'
 import { callLLM } from '@/lib/llm/caller'
 import { MODELS } from '@/lib/llm/models'
 
-const hasRealKey = Boolean(
-  process.env.OPENROUTER_API_KEY && !process.env.OPENROUTER_API_KEY.startsWith('dummy')
-)
+const hasRealKey = !!process.env.OPENROUTER_API_KEY?.startsWith('sk-or-')
 
 describe('callLLM', () => {
   beforeAll(() => {

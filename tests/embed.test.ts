@@ -2,9 +2,7 @@
 import { describe, it, expect, beforeAll } from 'vitest'
 import { embed, embedBatch, cosineSimilarity } from '@/lib/graph/embed'
 
-const hasRealKey = Boolean(
-  process.env.OPENROUTER_API_KEY && !process.env.OPENROUTER_API_KEY.startsWith('dummy')
-)
+const hasRealKey = !!process.env.OPENROUTER_API_KEY?.startsWith('sk-or-')
 
 describe('embed', () => {
   beforeAll(() => {

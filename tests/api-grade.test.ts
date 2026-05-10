@@ -44,7 +44,7 @@ describe('POST /api/grade', () => {
     expect(res.status).toBe(400)
   })
 
-  it.skipIf(!process.env.OPENROUTER_API_KEY)(
+  it.skipIf(!process.env.OPENROUTER_API_KEY?.startsWith('sk-or-'))(
     'returns deductions for valid input',
     async () => {
       const submission = `1: f'(x) = cos(2x²) · 2`

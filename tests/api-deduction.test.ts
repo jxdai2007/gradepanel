@@ -104,7 +104,7 @@ describe('POST /api/deduction', () => {
     expect(json.error).toBe('quote_validation_failed')
   })
 
-  it.skipIf(!process.env.OPENROUTER_API_KEY)(
+  it.skipIf(!process.env.OPENROUTER_API_KEY?.startsWith('sk-or-'))(
     'persists deduction for accept_add action',
     async () => {
       const req = new Request('http://localhost/api/deduction', {
