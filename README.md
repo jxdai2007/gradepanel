@@ -1,5 +1,7 @@
 # gradepanel
 
+![CI](https://github.com/jxdai2007/gradepanel/actions/workflows/ci.yml/badge.svg)
+
 Multi-model TA grading copilot with concept-graph retrieval, page-specific grounded feedback, and cross-test consistency.
 
 Built solo at BIBI 2026 (Build It Break It hackathon, Google LA).
