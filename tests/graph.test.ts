@@ -13,7 +13,7 @@ describe('graph db', () => {
     const tables = db
       .prepare("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")
       .all()
-      .map((r: any) => r.name)
+      .map((r) => (r as { name: string }).name)
     expect(tables).toContain('courses')
     expect(tables).toContain('assignments')
     expect(tables).toContain('rubric_items')
@@ -26,7 +26,7 @@ describe('graph db', () => {
     const db = getDb()
     db.prepare("INSERT INTO courses (id, name, professor_id, term) VALUES (?, ?, ?, ?)")
       .run('c1', 'Math 131A', 'prof1', 'Fall 2026')
-    const row = db.prepare('SELECT * FROM courses WHERE id = ?').get('c1') as any
+    const row = db.prepare('SELECT * FROM courses WHERE id = ?').get('c1') as { name: string }
     expect(row.name).toBe('Math 131A')
   })
 
@@ -39,7 +39,7 @@ describe('graph db', () => {
   })
 
   it('reports sqlite-vec availability or FTS5 fallback', () => {
-    const db = getDb()
-    expect(['sqlite-vec', 'fts5-fallback']).toContain((global as any).__GRAPH_BACKEND__ || 'fts5-fallback')
+    getDb()
+    expect(['sqlite-vec', 'fts5-fallback']).toContain((global as { __GRAPH_BACKEND__?: string }).__GRAPH_BACKEND__ || 'fts5-fallback')
   })
 })

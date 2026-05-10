@@ -26,7 +26,7 @@ export function getDb(): DBType {
   } catch {
     backend = 'fts5-fallback'
   }
-  ;(global as any).__GRAPH_BACKEND__ = backend
+  ;(global as { __GRAPH_BACKEND__?: string }).__GRAPH_BACKEND__ = backend
 
   // Apply schema
   const schemaPath = path.resolve(process.cwd(), 'lib', 'graph', 'schema.sql')
@@ -38,5 +38,5 @@ export function getDb(): DBType {
 export function resetDb(): void {
   if (db) db.close()
   db = null
-  ;(global as any).__GRAPH_BACKEND__ = undefined
+  ;(global as { __GRAPH_BACKEND__?: string }).__GRAPH_BACKEND__ = undefined
 }
