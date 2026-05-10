@@ -1,0 +1,16 @@
+Math 131A — Midterm 1
+Student ID: B10000001
+Problem 1 (10 pts)
+
+Find d/dx [sin(2x²)] using the chain rule.
+
+Student answer:
+Let u = 2x², so f(u) = sin(u).
+By the chain rule: d/dx [sin(2x²)] = cos(2x²) · d/dx [2x²]
+d/dx [2x²] = 4x
+Therefore d/dx [sin(2x²)] = 4x cos(2x²).
+
+TA marks:
+-1: Minor notation error — should write d/dx[u] not d/dx[2x²] in the intermediate step.
+
+Total: 9/10

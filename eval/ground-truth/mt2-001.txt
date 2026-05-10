@@ -1,0 +1,18 @@
+Math 131A — Midterm 2
+Student ID: C20000001
+Problem 1 (10 pts)
+
+Differentiate h(x) = e^(3x²) using the chain rule.
+
+Student answer:
+h(x) = e^(3x²)
+Let outer = e^u, inner u = 3x²
+h'(x) = e^(3x²) · 3
+This gives h'(x) = 3e^(3x²)
+
+TA marks:
+-2: Did not differentiate the inner function u = 3x². The correct inner derivative is du/dx = 6x, not 3.
+-1: Omitted the inner derivative term entirely — final answer should be 6x · e^(3x²).
+-1: Setup of chain rule is incomplete: h'(x) = e^u · du/dx requires du/dx to be shown.
+
+Total: 6/10

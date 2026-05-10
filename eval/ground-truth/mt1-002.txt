@@ -1,0 +1,16 @@
+Math 131A — Midterm 1
+Student ID: B10000002
+Problem 1 (10 pts)
+
+Find d/dx [sin(2x²)] using the chain rule.
+
+Student answer:
+f(x) = sin(2x²)
+f'(x) = cos(2x²) · 2
+Final answer: 2cos(2x²)
+
+TA marks:
+-2: Failed to differentiate the inner function 2x² correctly. The inner derivative is 4x, not 2. Should be 4x cos(2x²).
+-1: Final answer 2cos(2x²) carries forward the error from the previous step.
+
+Total: 7/10
