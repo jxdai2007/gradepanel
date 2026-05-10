@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-05-10T21:03:41.575Z",
+  "filesProcessed": 3,
+  "extractionErrors": 0,
+  "totalDeductions": 6,
+  "validQuotes": 6,
+  "quoteValidationPassRate": 100,
+  "rubricItemsInferred": 5,
+  "perFile": [
+    {
+      "file": "mt1-001.txt",
+      "deductionsExtracted": 1,
+      "quotesValid": 1,
+      "error": null
+    },
+    {
+      "file": "mt1-002.txt",
+      "deductionsExtracted": 2,
+      "quotesValid": 2,
+      "error": null
+    },
+    {
+      "file": "mt2-001.txt",
+      "deductionsExtracted": 3,
+      "quotesValid": 3,
+      "error": null
+    }
+  ]
+}

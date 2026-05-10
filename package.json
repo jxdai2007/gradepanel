@@ -10,7 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "eval": "tsx eval/calibrate.ts",
+    "eval": "node --env-file=.env.local -r tsx/cjs eval/calibrate.ts",
     "ci": "npm run lint && npm test && npm run build"
   },
   "dependencies": {
