@@ -1,26 +1,43 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* Surface */
+  --color-surface: oklch(97% 0.006 250);
+  --color-surface-raised: oklch(99% 0.004 250);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Borders */
+  --color-border: oklch(88% 0.008 250);
+
+  /* Text */
+  --color-primary: oklch(18% 0.010 250);
+  --color-secondary: oklch(45% 0.010 250);
+  --color-tertiary: oklch(65% 0.008 250);
+
+  /* Accent */
+  --color-accent: oklch(52% 0.16 250);
+  --color-accent-subtle: oklch(94% 0.04 250);
+
+  /* Danger */
+  --color-danger: oklch(52% 0.18 27);
+  --color-danger-subtle: oklch(96% 0.03 27);
+
+  /* Warning */
+  --color-warning: oklch(72% 0.15 75);
+  --color-warning-subtle: oklch(97% 0.04 75);
+
+  /* Success */
+  --color-success: oklch(56% 0.14 155);
+  --color-success-subtle: oklch(94% 0.04 155);
+
+  /* Typography */
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, monospace;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.5;
 }
