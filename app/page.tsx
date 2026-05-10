@@ -1,65 +1,208 @@
-import Image from "next/image";
+'use client'
+import { useState } from 'react'
+import Link from 'next/link'
+import { DragDropZone } from '@/app/components/DragDropZone'
+import { BootstrapProgress, type BootstrapStep } from '@/app/components/BootstrapProgress'
+import { ApprovalGate } from '@/app/components/ApprovalGate'
+import type { BootstrapResult } from '@/app/types'
+
+type AppState = 'idle' | 'extracting' | 'approval' | 'done'
 
 export default function Home() {
+  const [appState, setAppState] = useState<AppState>('idle')
+  const [currentStep, setCurrentStep] = useState<BootstrapStep>('reading')
+  const [bootstrap, setBootstrap] = useState<BootstrapResult | null>(null)
+  const [assignment, setAssignment] = useState('')
+  const [course, setCourse] = useState('')
+  const [fileCount, setFileCount] = useState(0)
+  const [error, setError] = useState<string | null>(null)
+
+  async function handleFiles(files: File[]) {
+    setError(null)
+    setFileCount(files.length)
+    setAppState('extracting')
+    setCurrentStep('reading')
+
+    let texts: string[]
+    try {
+      texts = await Promise.all(files.map((f) => f.text()))
+    } catch {
+      setError('Failed to read files.')
+      setAppState('idle')
+      return
+    }
+
+    setCurrentStep('extracting')
+
+    let result: BootstrapResult
+    try {
+      const res = await fetch('/api/extract', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ submissions: texts }),
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'Unknown error' }))
+        throw new Error((err as { error?: string }).error ?? 'Extraction failed')
+      }
+      setCurrentStep('inferring_rubric')
+      result = (await res.json()) as BootstrapResult
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Extraction failed')
+      setAppState('idle')
+      return
+    }
+
+    setCurrentStep('extracting_concepts')
+    await new Promise((r) => setTimeout(r, 300))
+    setCurrentStep('done')
+    setBootstrap(result)
+    setAppState('approval')
+  }
+
+  function handleDiscard() {
+    setBootstrap(null)
+    setAppState('idle')
+    setCurrentStep('reading')
+    setError(null)
+  }
+
+  async function handleConfirm(
+    rubricItems: Array<{ id: string; description: string; max_points: number }>,
+    concepts: string[]
+  ) {
+    try {
+      const res = await fetch('/api/rubric/finalize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          courseId: course || 'default',
+          assignmentId: assignment || 'default',
+          rubricItems,
+          concepts,
+        }),
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'Unknown error' }))
+        throw new Error((err as { error?: string }).error ?? 'Finalize failed')
+      }
+      setAppState('done')
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to save rubric')
+    }
+  }
+
+  const totalConcepts = bootstrap
+    ? Object.values(bootstrap.conceptsByItem).flat().length
+    : 0
+
+  const submissionCount = bootstrap?.perSubmission.length ?? 0
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+    <div className="min-h-screen bg-surface font-sans">
+      {/* Top bar */}
+      <header className="h-11 border-b border-border flex items-center px-6 gap-4">
+        <span className="font-semibold text-[15px] text-primary tracking-tight">
+          gradepanel
+        </span>
+        <div className="flex-1" />
+        <button className="text-[13px] text-secondary hover:text-primary transition-colors">
+          Help
+        </button>
+      </header>
+
+      <main className="max-w-2xl mx-auto px-6 py-10">
+        {/* Course + Assignment inputs */}
+        <div className="flex gap-6 mb-8">
+          <div className="flex-1">
+            <label className="block text-[11px] text-tertiary uppercase tracking-widest mb-1">
+              Course
+            </label>
+            <input
+              value={course}
+              onChange={(e) => setCourse(e.target.value)}
+              placeholder="e.g. MATH 131A"
+              className="w-full border-b border-border bg-transparent text-[15px] text-primary pb-1 outline-none placeholder:text-tertiary focus:border-accent transition-colors"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          </div>
+          <div className="flex-1">
+            <label className="block text-[11px] text-tertiary uppercase tracking-widest mb-1">
+              Assignment
+            </label>
+            <input
+              value={assignment}
+              onChange={(e) => setAssignment(e.target.value)}
+              placeholder="e.g. Midterm 1"
+              className="w-full border-b border-border bg-transparent text-[15px] text-primary pb-1 outline-none placeholder:text-tertiary focus:border-accent transition-colors"
+            />
+          </div>
         </div>
+
+        {/* Error banner */}
+        {error && (
+          <div className="mb-4 px-3 py-2 bg-danger-subtle text-danger text-[13px] rounded-md font-mono">
+            {error}
+          </div>
+        )}
+
+        {/* State: idle or extracting */}
+        {(appState === 'idle' || appState === 'extracting') && (
+          <>
+            <DragDropZone
+              onFiles={handleFiles}
+              state={appState === 'extracting' ? 'extracting' : 'idle'}
+            />
+
+            {appState === 'extracting' && (
+              <BootstrapProgress
+                currentStep={currentStep}
+                submissionCount={fileCount}
+              />
+            )}
+
+            {/* What this does */}
+            {appState === 'idle' && (
+              <div className="mt-8 pt-6 border-t border-border">
+                <p className="text-[13px] text-secondary leading-relaxed">
+                  Drop a batch of graded submissions (.txt). The LLM panel extracts
+                  deductions, infers a rubric, and maps concepts. You review and confirm
+                  once — then gradepanel auto-grades new submissions against that rubric
+                  with full provenance.
+                </p>
+              </div>
+            )}
+          </>
+        )}
+
+        {/* State: approval */}
+        {appState === 'approval' && bootstrap && (
+          <ApprovalGate
+            submissionCount={submissionCount}
+            rubricItems={bootstrap.rubric.rubric_items}
+            conceptsByItem={bootstrap.conceptsByItem}
+            totalConcepts={totalConcepts}
+            onConfirm={handleConfirm}
+            onDiscard={handleDiscard}
+          />
+        )}
+
+        {/* State: done */}
+        {appState === 'done' && (
+          <div className="mt-8 text-center">
+            <p className="text-[15px] text-success font-semibold">Rubric saved.</p>
+            <p className="text-[13px] text-secondary mt-1">
+              Go to{' '}
+              <Link
+                href={`/grade?courseId=${encodeURIComponent(course || 'default')}&assignmentId=${encodeURIComponent(assignment || 'default')}`}
+                className="text-accent underline"
+              >
+                grade view
+              </Link>{' '}
+              to start grading submissions.
+            </p>
+          </div>
+        )}
       </main>
     </div>
-  );
+  )
 }
