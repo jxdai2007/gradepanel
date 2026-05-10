@@ -1,0 +1,34 @@
+Math 131A — Midterm 1
+Student ID: A12345678
+Problem 1 (10 pts)
+
+Prove that if {a_n} is a Cauchy sequence in R, then {a_n} is bounded.
+
+Student answer:
+Let {a_n} be a Cauchy sequence. By definition, for epsilon = 1 there exists N such that
+|a_n - a_m| < 1 for all n, m >= N.
+
+In particular, for all n >= N: |a_n - a_N| < 1, so |a_n| < |a_N| + 1.
+
+Let M = max(|a_1|, |a_2|, ..., |a_{N-1}|, |a_N| + 1). Then |a_n| <= M for all n.
+
+Therefore {a_n} is bounded. []
+
+TA marks:
+-2: Did not verify that M is finite or well-defined (it is a max over a finite set — should state this explicitly).
+-1: Missing justification for why |a_n| < |a_N| + 1 implies |a_n| <= |a_N| + 1 (strict vs non-strict inequality).
+
+Problem 2 (10 pts)
+
+Let f: R -> R be uniformly continuous. Show that if {x_n} is Cauchy, then {f(x_n)} is Cauchy.
+
+Student answer:
+Since {x_n} is Cauchy, for any epsilon > 0 there exists N such that |x_n - x_m| < delta(epsilon) for n,m >= N,
+where delta comes from uniform continuity of f.
+
+Then |f(x_n) - f(x_m)| < epsilon for all n,m >= N.
+
+Hence {f(x_n)} is Cauchy.
+
+TA marks:
+-0: Correct. Full marks.
