@@ -52,8 +52,9 @@ export async function pdfToPagePngs(
     const canvas = createCanvas(width, height)
     const ctx = canvas.getContext('2d')
 
-    // pdfjs render call — canvasContext must be a 2D context
+    // pdfjs v5 render() requires canvas in addition to canvasContext
     const renderTask = page.render({
+      canvas: canvas as unknown as HTMLCanvasElement,
       canvasContext: ctx as unknown as CanvasRenderingContext2D,
       viewport,
     })

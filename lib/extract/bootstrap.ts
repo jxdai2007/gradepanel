@@ -11,7 +11,7 @@ import {
   buildConceptPrompt,
 } from '@/lib/panel/prompts'
 import { validateQuote } from '@/lib/grounding/validate'
-import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions'
+import type { ChatCompletionContentPart } from 'openai/resources/chat/completions'
 import type { PdfPagePng } from '@/lib/extract/pdf'
 
 // ── Schemas ──────────────────────────────────────────────────────────────────
@@ -125,10 +125,11 @@ export async function extractFromPdfPages(
   pages: Pick<PdfPagePng, 'dataUrl'>[]
 ): Promise<VisionExtractedSubmission> {
   // Build multimodal content: text prompt + one image_url block per page
-  const userContent: ChatCompletionMessageParam['content'] = [
+  const userContent: ChatCompletionContentPart[] = [
     { type: 'text', text: buildVisionExtractionPrompt() },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ...pages.map((p) => ({ type: 'image_url' as const, image_url: { url: p.dataUrl } }) as any),
+    ...pages.map(
+      (p) => ({ type: 'image_url' as const, image_url: { url: p.dataUrl } }) as ChatCompletionContentPart
+    ),
   ]
   return callLLM({
     model: MODELS.CLAUDE,
