@@ -19,7 +19,7 @@ export function DragDropZone({ onFiles, state }: DragDropZoneProps) {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { 'text/plain': ['.txt'] },
+    accept: { 'text/plain': ['.txt'], 'application/pdf': ['.pdf'] },
     multiple: true,
     disabled: state !== 'idle',
   })
@@ -46,7 +46,7 @@ export function DragDropZone({ onFiles, state }: DragDropZoneProps) {
             Drop graded submissions here
           </p>
           <p className="mt-1 text-[13px] text-secondary">
-            .txt files — one submission per file
+            .txt or .pdf files — one submission per file
           </p>
         </>
       )}

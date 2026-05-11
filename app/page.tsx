@@ -23,9 +23,26 @@ export default function Home() {
     setAppState('extracting')
     setCurrentStep('reading')
 
-    let texts: string[]
+    let payload: Array<{ name: string; type: 'text' | 'pdf'; content: string }>
     try {
-      texts = await Promise.all(files.map((f) => f.text()))
+      payload = await Promise.all(
+        files.map(async (f) => {
+          const isPdf =
+            f.name.toLowerCase().endsWith('.pdf') || f.type === 'application/pdf'
+          if (isPdf) {
+            const buf = await f.arrayBuffer()
+            const bytes = new Uint8Array(buf)
+            // Browser-compatible base64 encoding (no Buffer in browser)
+            let binary = ''
+            for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i])
+            const base64 = btoa(binary)
+            return { name: f.name, type: 'pdf' as const, content: base64 }
+          } else {
+            const text = await f.text()
+            return { name: f.name, type: 'text' as const, content: text }
+          }
+        })
+      )
     } catch {
       setError('Failed to read files.')
       setAppState('idle')
@@ -39,7 +56,7 @@ export default function Home() {
       const res = await fetch('/api/extract', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ submissions: texts }),
+        body: JSON.stringify({ files: payload }),
       })
       if (!res.ok) {
         const err = await res.json().catch(() => ({ error: 'Unknown error' }))
@@ -164,10 +181,11 @@ export default function Home() {
             {appState === 'idle' && (
               <div className="mt-8 pt-6 border-t border-border">
                 <p className="text-[13px] text-secondary leading-relaxed">
-                  Drop a batch of graded submissions (.txt). The LLM panel extracts
-                  deductions, infers a rubric, and maps concepts. You review and confirm
-                  once — then gradepanel auto-grades new submissions against that rubric
-                  with full provenance.
+                  Drop a batch of graded submissions (.txt or .pdf). PDF files use
+                  vision extraction — handwritten work, equations, and TA marks are all
+                  captured. The LLM panel extracts deductions, infers a rubric, and maps
+                  concepts. You review and confirm once — then gradepanel auto-grades new
+                  submissions against that rubric with full provenance.
                 </p>
               </div>
             )}
